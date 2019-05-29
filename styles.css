@@ -5,10 +5,12 @@ body {
 
 #level-title {
   font-family: 'Press Start 2P', cursive;
-  font-size: 2.5rem;
-  margin:  5%;
-  bottom-margin: 1%;
+  font-size: 2rem;
+  margin:  10%;
+  bottom-margin: 30%;
   color: #FEF2BF;
+  border: 5px solid black;
+  border-radius: 0%;
 }
 
 h3 {
@@ -41,10 +43,12 @@ h3 {
 
 .red {
   background-color: red;
+  margin-top: 30px;
 }
 
 .green {
   background-color: green;
+  margin-top: 30px;
 }
 
 .blue {

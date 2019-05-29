@@ -4,7 +4,7 @@
 
 var buttonColours = ["red", "blue", "green", "yellow"];
 
-var gamePattern;
+var gamePattern = '';
 
 var randomChosenColour;
 
@@ -18,12 +18,21 @@ var ringerCount = 0;
 
 function resetGame () {
 
-    //console.log("Reset Game");
+    if (gamePattern.length > 19) {
+
+      $("#level-title").text("WOW! You crushed it. (Select to Play)");
+      audioEgg1 = new Audio ("sounds/best_thug_life_ringtone.mp3");
+      audioEgg1.play();
+      delayAmount = 7000;
+  } else {
 
     // initialize vars and screen.   Screen should ask for anykey.  Vars should be ready for new sequence.
 
-    $("#level-title").text("Select any key to begin");
+    $("#level-title").text("Select HERE to begin").css("border", "5px solid black");
+  }
 
+    $("#level-title").click(respondToAnyKey);
+    $(".btn").off("click");
 
     currentGame = 0;
 
@@ -42,7 +51,10 @@ function startGame () {
 
   currentGame = 1;
 
-  $("#level-title").text("Simon Says!");
+  $("#level-title").text("Simon Says!").css("border", "none");
+
+  // Turn off clicking on the title until the match is over
+  $("#level-title").off("click");
 
   nextTurn();
 }
@@ -68,7 +80,7 @@ function currentMatchesPattern () {
 
 function respondToClick() {
 
-  // if we are not playing yet then start the gamePattern
+    // if we are not playing yet then start the gamePattern
 
   if (currentGame === 0) {
 
@@ -141,6 +153,8 @@ function userErred (buttonColor) {
 
 function respondToAnyKey () {
 
+  console.log("in respondtoanykey");
+
     // If the game is in motion then ignore
 
     if (currentGame === 0) {
@@ -169,9 +183,6 @@ function nextSequence (){
 
 
 function ringButtonsforFlashy (buttonNumber) {
-
-
-    console.log(buttonColours[buttonNumber] + ' ' + buttonNumber);
 
     //  The button border is already black so flash to yellow
 
@@ -219,6 +230,10 @@ function ringButtonAfterUserClick (buttonColor) {
 
 function ringButtonAndNextInSequence () {
 
+  // Ignore user clicks of the buttons while we are ringing the sequence
+
+  $(".btn").off("click");
+
   // Determine what button we are ringing ... using the global variable
 
   var buttonColor = gamePattern[ringerCount];
@@ -235,15 +250,11 @@ function ringButtonAndNextInSequence () {
 
   audioVar.play();
 
-  console.log ("played audio for " + buttonColor + "?");
-
   // Now for the magic delay ... wait a moment to turn the color back to black AND ring the next button in sequence.
 
   setTimeout(function () {
 
-      console.log("actually running the timer end");
-
-      $('#'+buttonColor).css("border","10px solid black");
+        $('#'+buttonColor).css("border","10px solid black");
 
       ringerCount++;
 
@@ -253,6 +264,9 @@ function ringButtonAndNextInSequence () {
           setTimeout (function () {ringButtonAndNextInSequence();}, 200);
       } else {
 
+        // The whole sequence has been rung. Time to allow button clicks again
+
+        $(".btn").click(respondToClick);
       }
 
     },   600);
@@ -268,17 +282,33 @@ function displaySequence () {
 
    if (gamePattern.length !== 0) {
 
-      // (Consider) doing something to keep the user from clicking while the sequence is going
-
-     //TBD
-
-      // Ring the first button ... and then let the sequence play out to the end.
+        // Ring the first button ... and then let the sequence play out to the end.
 
       ringButtonAndNextInSequence ();
   }
 }
 
 function nextTurn () {
+
+    var delayAmount = 1500;
+    //Easter egg after 10 in a row
+
+    if (gamePattern.length === 9) {
+
+        $("#level-title").text("WOW! Lucky 9s! Keep going!");
+        audioEgg1 = new Audio ("sounds/Despacito-Marimba-Remix.mp3");
+        audioEgg1.play();
+        delayAmount = 7000;
+    }  else {
+
+      if (gamePattern.slice(gamePattern.length - 2, gamePattern.length) === "red, red") {
+
+        audioEgg2 = new Audio ("sounds/Maroon-5-Girls-Like-You-Ringtone.mp3");
+        audioEgg2.play();
+        delayAmount = 7000;
+      }
+
+    }
 
     // Select the next color for overall sequence
 
@@ -288,7 +318,7 @@ function nextTurn () {
 
     setTimeout (function () {
             displaySequence ();
-    }, 1500);
+    }, delayAmount);
 
     // Clear the user sequence for the user to start over
     currentTurnSequence = [];
@@ -299,10 +329,11 @@ function nextTurn () {
 
 resetGame ();
 
-// Wait for a click of a button ...
+// try to load sounds to improve usability due to lang
 
-$(".btn").click(respondToClick);
-
-// Wait for any key ... to start gamePattern
-
-$(document).keydown(respondToAnyKey);
+var audioPreLoad = new Audio("sounds/blue.mp3");
+audioPreLoad =  new Audio("sounds/ding.mp3");
+audioPreLoad =  new Audio("sounds/green.mp3");
+audioPreLoad =  new Audio("sounds/red.mp3");
+audioPreLoad =  new Audio("sounds/wrong.mp3");
+audioPreLoad =  new Audio("sounds/yellow.mp3");
